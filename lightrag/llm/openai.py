@@ -30,6 +30,7 @@ from lightrag.utils import (
     locate_json_string_body_from_string,
     safe_unicode_decode,
     logger,
+    TokenTracker
 )
 from lightrag.types import GPTKeywordExtractionFormat
 from lightrag.api import __api_version__
@@ -44,6 +45,7 @@ from dotenv import load_dotenv
 # the OS environment variables take precedence over the .env file
 load_dotenv(dotenv_path=".env", override=False)
 
+token_tracker = TokenTracker()
 
 class InvalidResponseError(Exception):
     """Custom exception class for triggering retry mechanism"""
@@ -309,6 +311,7 @@ async def openai_complete_if_cache(
                     "total_tokens": getattr(response.usage, "total_tokens", 0),
                 }
                 token_tracker.add_usage(token_counts)
+                logger.info(f"Token usage - Prompt: {token_counts['prompt_tokens']}, Completion: {token_counts['completion_tokens']}, Total: {token_counts['total_tokens']}")
 
             logger.debug(f"Response content len: {len(content)}")
             verbose_debug(f"Response: {response}")
@@ -337,6 +340,7 @@ async def openai_complete(
         prompt,
         system_prompt=system_prompt,
         history_messages=history_messages,
+        token_tracker=token_tracker,
         **kwargs,
     )
 
@@ -358,6 +362,7 @@ async def gpt_4o_complete(
         prompt,
         system_prompt=system_prompt,
         history_messages=history_messages,
+        token_tracker=token_tracker,
         **kwargs,
     )
 
@@ -379,6 +384,7 @@ async def gpt_4o_mini_complete(
         prompt,
         system_prompt=system_prompt,
         history_messages=history_messages,
+        token_tracker=token_tracker,
         **kwargs,
     )
 
