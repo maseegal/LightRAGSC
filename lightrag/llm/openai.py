@@ -115,7 +115,7 @@ async def openai_complete_if_cache(
     history_messages: list[dict[str, Any]] | None = None,
     base_url: str | None = None,
     api_key: str | None = None,
-    token_tracker: Any | None = None,
+    token_tracker: TokenTracker | None = None,
     **kwargs: Any,
 ) -> str:
     """Complete a prompt using OpenAI's API with caching support.
@@ -302,6 +302,8 @@ async def openai_complete_if_cache(
             if r"\u" in content:
                 content = safe_unicode_decode(content.encode("utf-8"))
 
+            token_tracker = TokenTracker()
+            
             if token_tracker and hasattr(response, "usage"):
                 token_counts = {
                     "prompt_tokens": getattr(response.usage, "prompt_tokens", 0),
@@ -340,7 +342,7 @@ async def openai_complete(
         prompt,
         system_prompt=system_prompt,
         history_messages=history_messages,
-        token_tracker=token_tracker,
+        token_tracker=TokenTracker(),
         **kwargs,
     )
 
@@ -362,7 +364,7 @@ async def gpt_4o_complete(
         prompt,
         system_prompt=system_prompt,
         history_messages=history_messages,
-        token_tracker=token_tracker,
+        token_tracker=TokenTracker(),
         **kwargs,
     )
 
@@ -384,7 +386,7 @@ async def gpt_4o_mini_complete(
         prompt,
         system_prompt=system_prompt,
         history_messages=history_messages,
-        token_tracker=token_tracker,
+        token_tracker=TokenTracker(),
         **kwargs,
     )
 
