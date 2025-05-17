@@ -52,5 +52,13 @@ ENV INPUT_DIR=/app/data/inputs
 # Expose the default port
 EXPOSE 9621
 
-# Set entrypoint
-ENTRYPOINT ["python", "-m", "lightrag.api.lightrag_server"]
+# Install netcat for port checks
+RUN apt-get update && apt-get install -y netcat-openbsd && rm -rf /var/lib/apt/lists/*
+
+# Copy wait-and-start script
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+# Use startup script as entrypoint
+ENTRYPOINT ["/app/start.sh"]
+
